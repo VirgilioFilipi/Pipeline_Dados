@@ -20,6 +20,8 @@ class AgricultureDB:
                 cur = conn.cursor()
                 cur.execute("DELETE FROM area_colhida;")
                 cur.execute("DELETE FROM quantidade_produzida;")
+                cur.execute("DELETE FROM sqlite_sequence WHERE name='area_colhida';")
+                cur.execute("DELETE FROM sqlite_sequence WHERE name='quantidade_produzida';")
                 conn.commit()
                 self.create_view(conn)
                 conn.close()
