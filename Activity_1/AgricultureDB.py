@@ -166,31 +166,35 @@ class AgricultureDB:
         Parameters:
             year (int): Ano para o qual inserir ou atualizar os dados.
         """
-
         print("Iniciando a população das tabelas de área colhida e produzida")
         conn = self.create_connection(self.db_name)
         cursor = conn.cursor()
 
-        area_data = self.fetch_data(year, 216)
-        if area_data:
-            date = [(entry['D1N'], entry['D1C'], entry['D3N'], entry['V']) for entry in area_data[1:]]
+        try:
+            conn.execute("BEGIN TRANSACTION")
 
-            cursor.executemany('''
-            INSERT INTO area_colhida (municipio, codigo, ano, colhida) VALUES (?, ?, ?, ?);
-            ''', date)
+            area_data = self.fetch_data(year, 216)
+            if area_data:
+                data = [(entry['D1N'], entry['D1C'], entry['D3N'], entry['V']) for entry in area_data[1:]]
+                cursor.executemany('''
+                    INSERT INTO area_colhida (municipio, codigo, ano, colhida) VALUES (?, ?, ?, ?);
+                ''', data)
 
-        quantidade_data = self.fetch_data(year, 214)
-        print("Iniciando segunda tabela")
-        if quantidade_data:
-            date = [(entry['D1N'], entry['D1C'], entry['D3N'], entry['V']) for entry in quantidade_data[1:]]
+            print("Iniciando segunda tabela")
+            quantidade_data = self.fetch_data(year, 214)
+            if quantidade_data:
+                data = [(entry['D1N'], entry['D1C'], entry['D3N'], entry['V']) for entry in quantidade_data[1:]]
+                cursor.executemany('''
+                    INSERT INTO quantidade_produzida (municipio, codigo, ano, produzida) VALUES (?, ?, ?, ?);
+                ''', data)
 
-            cursor.executemany('''
-            INSERT INTO quantidade_produzida (municipio, codigo, ano, produzida) VALUES (?, ?, ?, ?);
-            ''', date)
-        conn.commit()
-        conn.close()
-
-        print("Populadas as tabelas de área colhida e produzida")
+            conn.execute("COMMIT")
+            print("Populadas as tabelas de área colhida e produzida")
+        except sqlite3.Error as e:
+            conn.execute("ROLLBACK")
+            print("Erro ao inserir/atualizar os dados:", e)
+        finally:
+            conn.close()
 
     def delete(self, year):
         """Deleta os dados do ano de cada tabela."""

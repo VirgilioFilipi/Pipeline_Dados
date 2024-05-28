@@ -58,7 +58,7 @@ start_year = 2018
 
 - path_db: diretório onde o banco está:
 ```ini
-path_db = ../db/agricultura.db
+path_db = ../agricultura.db
 ```
 
 - debug_mode = 0: programa imprimirá informações diretamente no terminal durante a execução.
@@ -139,7 +139,7 @@ Na aba `db`, existem 1 parâmetro:
 
 - path_db: diretório onde o banco está:
 ```ini
-path_db = ../db/agricultura.db
+path_db = ../agricultura.db
 ```
 
 ### Perguntas adicionais relacionadas com a sua proposta
